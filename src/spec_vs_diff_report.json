@@ -1,0 +1,104 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-08T05:54:48.325Z",
+  "summary": "Diff adds a Motoko backend actor with note submission/verification plus a new React frontend with routing, auth gates, moderator gates, offline-localStorage hook, and themed styling. Several BuildRequest requirements appear only partially implemented or have unclear/incorrect implementations based on the visible diff (notably persistence/migration, moderation queue data source, header identity display, and verification status modeling).",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Reflect authentication state clearly in the header (signed out vs signed in principal short form).",
+      "reason": "Header includes a login/logout button but does not display the signed-in principal/identity anywhere in the header UI in the shown code.",
+      "evidence": [
+        "frontend/src/components/header/AppHeader.tsx",
+        "frontend/src/components/auth/LoginButton.tsx"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Verification status supports at minimum: pending, verified, rejected (with optional rejection reason).",
+      "reason": "Backend note model uses a single boolean field `verified : Bool` plus `rejectionReason : ?Text`, rather than an explicit status enum/variant representing pending/verified/rejected. Pending vs rejected is inferred, which does not match the requested explicit status support.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Ensure notes data survives canister upgrades according to the platform’s migration policy.",
+      "reason": "Visible backend state uses in-memory `Map.empty` and a `var nextNoteId` with no shown stable variables or upgrade hooks (`preupgrade`/`postupgrade`) to persist/restore data across upgrades.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Moderator-only page lists pending notes (global queue), view details, and verify/reject; moderator endpoints should use pending list endpoints enforced server-side.",
+      "reason": "Moderator queue page fetches data via `useGetMySubmissions()` (the caller’s submissions) and filters locally, rather than calling a moderator-only backend endpoint to list all pending submissions. This does not satisfy a global moderation queue workflow.",
+      "evidence": [
+        "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Moderator can open a pending note detail view for a specific note ID and take actions to verify or reject that note.",
+      "reason": "Moderator queue navigation uses `index.toString()` as the `noteId` route param instead of a real backend note ID. The backend `getMySubmissions()` returns `[Note]` without IDs, so the UI cannot reliably address a specific note for review/verify/reject by ID based on the shown code.",
+      "evidence": [
+        "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+        "backend/main.mo"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "User profile creation flow (ProfileSetupModal) with backend user profile queries/mutations.",
+      "reason": "BuildRequest does not request user profiles or a required name onboarding modal; it only specifies Internet Identity auth, notes, moderation, browsing, offline saving, theme, and generated assets.",
+      "evidence": [
+        "frontend/src/components/auth/ProfileSetupModal.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    },
+    {
+      "description": "Admin secret token passed via URL parameter and backend `_initializeAccessControlWithSecret` initialization call.",
+      "reason": "BuildRequest specifies moderator status determined in backend and exposed via read method; it does not request a secret URL token mechanism for initializing access control or granting admin.",
+      "evidence": [
+        "frontend/src/hooks/useActor.ts"
+      ]
+    }
+  ],
+  "confidence": 0.62,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/auth/AuthGate.tsx",
+    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/components/auth/ModeratorGate.tsx",
+    "frontend/src/components/auth/ProfileSetupModal.tsx",
+    "frontend/src/components/empty-states/EmptyState.tsx",
+    "frontend/src/components/header/AppHeader.tsx",
+    "frontend/src/components/layout/PageLayout.tsx",
+    "frontend/src/components/notes/NoteCard.tsx",
+    "frontend/src/components/notes/NoteStatusBadge.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useCallerRole.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useModeration.ts",
+    "frontend/src/hooks/useOfflineSavedNotes.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/MySubmissionsPage.tsx",
+    "frontend/src/pages/NoteDetailPage.tsx",
+    "frontend/src/pages/OfflinePage.tsx",
+    "frontend/src/pages/PublicBrowsePage.tsx",
+    "frontend/src/pages/SubmitNotePage.tsx",
+    "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+    "frontend/src/pages/moderation/ModeratorReviewPage.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

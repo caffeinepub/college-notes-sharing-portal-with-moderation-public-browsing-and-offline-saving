@@ -1,0 +1,204 @@
+{
+  "kind": "build_request",
+  "title": "College notes sharing portal with moderation, public browsing, and offline saving",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Add Internet Identity authentication to the app UI (sign in / sign out) and enforce authenticated access for note submission, “My submissions”, moderator actions, and offline saving. Reflect authentication state clearly in the header (signed out vs signed in principal).",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add Internet Identity sign-in/sign-out and role-based access (regular user vs moderator), enforced in backend and reflected in UI."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When signed out, the user can browse verified notes but cannot submit notes, view “My submissions”, save offline, or access moderator pages/actions.",
+        "When signed in, the UI shows a sign-out action and displays the user identity (e.g., principal short form).",
+        "Backend rejects calls that require authentication when the caller is anonymous."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Implement role-based access control with two roles: regular user and moderator. Determine moderator status in the backend and expose a read method so the frontend can conditionally show moderator navigation and actions.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add Internet Identity sign-in/sign-out and role-based access (regular user vs moderator), enforced in backend and reflected in UI."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend provides a method to check whether the current caller is a moderator.",
+        "Moderator-only endpoints (review list, verify, reject) are enforced in the backend and return an authorization error for non-moderators.",
+        "Frontend shows moderator-only sections/actions only when the signed-in user is a moderator."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Create a backend notes data model and persistence supporting: subject, unit, title, description, uploader, timestamps (created and last-updated), verification status, attachment metadata, and optional rejection reason. Ensure data survives canister upgrades according to the platform’s migration policy.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Create backend notes model and persistence with fields for subject, unit, title, description, uploader, timestamps, verification status, attachment metadata, and optional rejection reason."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend stores notes with all specified fields and can return them by ID.",
+        "Verification status supports at minimum: pending, verified, rejected; rejected notes may include an optional rejection reason.",
+        "Persistent state is used so notes are not lost on normal operation; if an upgrade requires migration, follow the conditional migration policy."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement authenticated note submission: a form with required-field validation for subject, unit, title, and description, plus attachment metadata input (at least optional). After submission, the note is stored as pending moderation under the submitting user.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Implement authenticated note submission flow with required-field validation and a “my submissions” view showing status and rejection reasons."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Submitting a note while signed out is blocked (UI) and rejected (backend).",
+        "Client-side validation prevents submission when required fields are missing; backend also validates required fields.",
+        "New submissions are stored with status = pending and uploader = caller principal, and timestamps are set."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add a “My submissions” page for signed-in users showing all notes they uploaded, including current status (pending/verified/rejected) and any rejection reason when present.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Implement authenticated note submission flow with required-field validation and a “my submissions” view showing status and rejection reasons."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Page is accessible only when signed in.",
+        "List shows each submission with title, subject, unit, submission date, and status.",
+        "If a note is rejected and a rejection reason exists, it is displayed in the list and/or detail for that submission."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement moderator workflow: a moderator-only page to list pending notes, view submission details, and take actions to verify or reject a note. Rejection supports an optional reason. Verified notes must become visible in the public browse immediately after verification.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Implement moderator workflow: list pending notes, review details, verify or reject (with optional reason); ensure verified notes appear in public browse."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Only moderators can access the pending list and action endpoints.",
+        "Moderator can open a pending note detail view and choose Verify or Reject; Reject can include an optional reason.",
+        "After Verify, the note appears in the public verified notes list; after Reject, it does not appear publicly and the uploader can see the rejected status and reason in “My submissions”."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Build public portal pages that display verified notes only: (1) a browse/list page with subject and unit filters, and (2) a note detail page showing metadata (subject, unit, title, description, uploader display, timestamps, attachment metadata) and access to the note’s content/attachments as represented in the app.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Build public portal pages: list verified notes only, filter by subject/unit, and note detail view with metadata and access to content."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Public browse page shows only verified notes and supports filtering by subject and unit.",
+        "Filters update the displayed list predictably (including a clear way to reset filters).",
+        "Note detail page is reachable from the list and does not expose unverified notes to unauthenticated public users."
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Implement offline saving for signed-in users: allow save/remove on verified note detail (and/or list) and add an “Offline” section listing saved notes. Saved notes must remain available after a reload while offline (for previously saved items).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add offline saving: save/remove notes for offline use and an Offline section listing saved notes that remain available when offline after reload."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Signed-in users can save and remove verified notes for offline use; signed-out users cannot save offline.",
+        "Offline section lists saved notes with enough information to open an offline detail view.",
+        "If the user saves notes, reloads the app, and then goes offline, the Offline section still shows saved notes and allows viewing their saved details without requiring network calls."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Apply a consistent visual theme across all pages with a coherent typography, spacing, and component style system; do not use blue or purple as the primary branding colors.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Apply a consistent visual theme across all pages (avoid blue/purple as primary branding colors)."
+        ]
+      },
+      "acceptanceCriteria": [
+        "All main pages (Public browse, Note detail, Submit, My submissions, Moderator, Offline) share consistent layout patterns and styling.",
+        "Primary brand color is not blue or purple; theme feels cohesive across buttons, headings, and navigation."
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Generate static brand assets (logo + illustration) under frontend/public/assets/generated and display them in the header and at least one empty state.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Add generated static brand assets (logo + illustration) under frontend/public/assets/generated and display them in the header and at least one empty state."
+        ]
+      },
+      "acceptanceCriteria": [
+        "Two generated images exist at frontend/public/assets/generated with the agreed filenames from this build request.",
+        "Header displays the generated logo.",
+        "At least one empty state (e.g., no verified notes, no offline saves, or no pending notes) displays the generated illustration."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor (all logic in the main actor file).",
+    "Do not edit files under frontend/src/components/ui.",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts or .tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx; compose around them.",
+    "Use English for all user-facing UI text."
+  ],
+  "nonGoals": [
+    "Implementing third-party authentication providers other than Internet Identity.",
+    "Adding real-time features (e.g., websockets) or push notifications.",
+    "Using external databases or non-Motoko backend services."
+  ],
+  "imageRequirements": {
+    "required": [
+      "College notes portal logo mark with warm earthy palette (notes-logo.dim_256x256.png)",
+      "Friendly campus-themed flat illustration with books and papers, warm earthy palette (notes-illustration.dim_1200x800.png)"
+    ],
+    "edits": []
+  }
+}

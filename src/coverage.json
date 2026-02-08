@@ -1,0 +1,303 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-08T05:54:48.328Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 10,
+    "implemented": 9,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Add Internet Identity authentication to the app UI (sign in / sign out) and enforce authenticated access for note submission, “My submissions”, moderator actions, and offline saving. Reflect authentication state clearly in the header (signed out vs signed in principal).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/auth/AuthGate.tsx",
+          "frontend/src/components/header/AppHeader.tsx",
+          "frontend/src/components/auth/LoginButton.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/auth/AuthGate.tsx",
+          "frontend/src/components/header/AppHeader.tsx",
+          "frontend/src/components/auth/LoginButton.tsx"
+        ]
+      },
+      {
+        "id": "REQ-10",
+        "summary": "Generate static brand assets (logo + illustration) under frontend/public/assets/generated and display them in the header and at least one empty state.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/notes-logo.dim_256x256.png",
+          "frontend/public/assets/generated/notes-illustration.dim_1200x800.png",
+          "frontend/src/components/header/AppHeader.tsx",
+          "frontend/src/components/empty-states/EmptyState.tsx",
+          "frontend/src/pages/PublicBrowsePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/notes-logo.dim_256x256.png",
+          "frontend/public/assets/generated/notes-illustration.dim_1200x800.png",
+          "frontend/src/components/header/AppHeader.tsx",
+          "frontend/src/components/empty-states/EmptyState.tsx",
+          "frontend/src/pages/PublicBrowsePage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Implement role-based access control with two roles: regular user and moderator. Determine moderator status in the backend and expose a read method so the frontend can conditionally show moderator navigation and actions.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useCallerRole.ts",
+          "frontend/src/components/auth/ModeratorGate.tsx",
+          "frontend/src/components/header/AppHeader.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useCallerRole.ts",
+          "frontend/src/components/auth/ModeratorGate.tsx",
+          "frontend/src/components/header/AppHeader.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Create a backend notes data model and persistence supporting: subject, unit, title, description, uploader, timestamps (created and last-updated), verification status, attachment metadata, and optional rejection reason. Ensure data survives canister upgrades according to the platform’s migration policy.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Implement authenticated note submission: a form with required-field validation for subject, unit, title, and description, plus attachment metadata input (at least optional). After submission, the note is stored as pending moderation under the submitting user.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/SubmitNotePage.tsx",
+          "frontend/src/components/notes/AttachmentMetadataForm.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/SubmitNotePage.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Add a “My submissions” page for signed-in users showing all notes they uploaded, including current status (pending/verified/rejected) and any rejection reason when present.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/MySubmissionsPage.tsx",
+          "frontend/src/components/notes/NoteStatusBadge.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/MySubmissionsPage.tsx",
+          "frontend/src/components/notes/NoteStatusBadge.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Implement moderator workflow: a moderator-only page to list pending notes, view submission details, and take actions to verify or reject a note. Rejection supports an optional reason. Verified notes must become visible in the public browse immediately after verification.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+          "frontend/src/pages/moderation/ModeratorReviewPage.tsx",
+          "frontend/src/hooks/useModeration.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+          "frontend/src/pages/moderation/ModeratorReviewPage.tsx",
+          "frontend/src/hooks/useModeration.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Build public portal pages that display verified notes only: (1) a browse/list page with subject and unit filters, and (2) a note detail page showing metadata (subject, unit, title, description, uploader display, timestamps, attachment metadata) and access to the note’s content/attachments as represented in the app.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/PublicBrowsePage.tsx",
+          "frontend/src/pages/NoteDetailPage.tsx",
+          "frontend/src/components/notes/NoteCard.tsx",
+          "frontend/src/backend.d.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/PublicBrowsePage.tsx",
+          "frontend/src/pages/NoteDetailPage.tsx",
+          "frontend/src/components/notes/NoteCard.tsx",
+          "frontend/src/backend.d.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Implement offline saving for signed-in users: allow save/remove on verified note detail (and/or list) and add an “Offline” section listing saved notes. Saved notes must remain available after a reload while offline (for previously saved items).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useOfflineSavedNotes.ts",
+          "frontend/src/pages/OfflinePage.tsx",
+          "frontend/src/pages/NoteDetailPage.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useOfflineSavedNotes.ts",
+          "frontend/src/pages/OfflinePage.tsx",
+          "frontend/src/pages/NoteDetailPage.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Apply a consistent visual theme across all pages with a coherent typography, spacing, and component style system; do not use blue or purple as the primary branding colors.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/layout/PageLayout.tsx",
+          "frontend/src/pages/PublicBrowsePage.tsx",
+          "frontend/src/pages/SubmitNotePage.tsx",
+          "frontend/src/pages/MySubmissionsPage.tsx",
+          "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+          "frontend/src/pages/OfflinePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/layout/PageLayout.tsx",
+          "frontend/src/pages/PublicBrowsePage.tsx",
+          "frontend/src/pages/SubmitNotePage.tsx",
+          "frontend/src/pages/MySubmissionsPage.tsx",
+          "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+          "frontend/src/pages/OfflinePage.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
+    "backend/main.mo",
+    "build-request.json",
+    "build-template/Dockerfile",
+    "build-template/LICENSE",
+    "build-template/README.md",
+    "build-template/deploy.sh",
+    "build-template/icp.yaml",
+    "build-template/package.json",
+    "build-template/pnpm-lock.yaml",
+    "build-template/pnpm-workspace.yaml",
+    "build-template/scripts/prune-unused-images.js",
+    "build-template/scripts/resize-images.js",
+    "build-template/src/backend/canister.yaml",
+    "build-template/src/backend/system-idl/aaaaa-aa.did",
+    "build-template/src/frontend/canister.yaml",
+    "build-template/src/frontend/components.json",
+    "build-template/src/frontend/env.json",
+    "build-template/src/frontend/eslint-rules/no-bigint-in-query-keys.js",
+    "build-template/src/frontend/eslint-rules/require-internet-identity-provider.js",
+    "build-template/src/frontend/eslint.config.js",
+    "build-template/src/frontend/package.json",
+    "build-template/src/frontend/postcss.config.js",
+    "build-template/src/frontend/src/components/ui/accordion.tsx",
+    "build-template/src/frontend/src/components/ui/alert-dialog.tsx",
+    "build-template/src/frontend/src/components/ui/alert.tsx",
+    "build-template/src/frontend/src/components/ui/aspect-ratio.tsx",
+    "build-template/src/frontend/src/components/ui/avatar.tsx",
+    "build-template/src/frontend/src/components/ui/badge.tsx",
+    "build-template/src/frontend/src/components/ui/breadcrumb.tsx",
+    "build-template/src/frontend/src/components/ui/button.tsx",
+    "build-template/src/frontend/src/components/ui/calendar.tsx",
+    "build-template/src/frontend/src/components/ui/card.tsx",
+    "build-template/src/frontend/src/components/ui/carousel.tsx",
+    "build-template/src/frontend/src/components/ui/chart.tsx",
+    "build-template/src/frontend/src/components/ui/checkbox.tsx",
+    "build-template/src/frontend/src/components/ui/collapsible.tsx",
+    "build-template/src/frontend/src/components/ui/command.tsx",
+    "build-template/src/frontend/src/components/ui/context-menu.tsx",
+    "build-template/src/frontend/src/components/ui/dialog.tsx",
+    "build-template/src/frontend/src/components/ui/drawer.tsx",
+    "build-template/src/frontend/src/components/ui/dropdown-menu.tsx",
+    "build-template/src/frontend/src/components/ui/form.tsx",
+    "build-template/src/frontend/src/components/ui/hover-card.tsx",
+    "build-template/src/frontend/src/components/ui/input-otp.tsx",
+    "build-template/src/frontend/src/components/ui/input.tsx",
+    "build-template/src/frontend/src/components/ui/label.tsx",
+    "build-template/src/frontend/src/components/ui/menubar.tsx",
+    "build-template/src/frontend/src/components/ui/navigation-menu.tsx",
+    "build-template/src/frontend/src/components/ui/pagination.tsx",
+    "build-template/src/frontend/src/components/ui/popover.tsx",
+    "build-template/src/frontend/src/components/ui/progress.tsx",
+    "build-template/src/frontend/src/components/ui/radio-group.tsx",
+    "build-template/src/frontend/src/components/ui/resizable.tsx",
+    "build-template/src/frontend/src/components/ui/scroll-area.tsx",
+    "build-template/src/frontend/src/components/ui/select.tsx",
+    "build-template/src/frontend/src/components/ui/separator.tsx",
+    "build-template/src/frontend/src/components/ui/sheet.tsx",
+    "build-template/src/frontend/src/components/ui/sidebar.tsx",
+    "build-template/src/frontend/src/components/ui/skeleton.tsx",
+    "build-template/src/frontend/src/components/ui/slider.tsx",
+    "build-template/src/frontend/src/components/ui/sonner.tsx",
+    "build-template/src/frontend/src/components/ui/switch.tsx",
+    "build-template/src/frontend/src/components/ui/table.tsx",
+    "build-template/src/frontend/src/components/ui/tabs.tsx",
+    "build-template/src/frontend/src/components/ui/textarea.tsx",
+    "build-template/src/frontend/src/components/ui/toggle-group.tsx",
+    "build-template/src/frontend/src/components/ui/toggle.tsx",
+    "build-template/src/frontend/src/components/ui/tooltip.tsx",
+    "build-template/src/frontend/src/hooks/use-mobile.tsx",
+    "build-template/src/frontend/src/lib/utils.ts",
+    "build-template/src/frontend/tsconfig.json",
+    "build-template/src/frontend/vite.config.js",
+    "build-template/tsconfig.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/public/assets/generated/notes-illustration.dim_1200x800.png",
+    "frontend/public/assets/generated/notes-logo.dim_256x256.png",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/auth/AuthGate.tsx",
+    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/components/auth/ModeratorGate.tsx",
+    "frontend/src/components/auth/ProfileSetupModal.tsx",
+    "frontend/src/components/empty-states/EmptyState.tsx",
+    "frontend/src/components/header/AppHeader.tsx",
+    "frontend/src/components/layout/PageLayout.tsx",
+    "frontend/src/components/notes/NoteCard.tsx",
+    "frontend/src/components/notes/NoteStatusBadge.tsx",
+    "frontend/src/config.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useCallerRole.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useModeration.ts",
+    "frontend/src/hooks/useOfflineSavedNotes.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/MySubmissionsPage.tsx",
+    "frontend/src/pages/NoteDetailPage.tsx",
+    "frontend/src/pages/OfflinePage.tsx",
+    "frontend/src/pages/PublicBrowsePage.tsx",
+    "frontend/src/pages/SubmitNotePage.tsx",
+    "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+    "frontend/src/pages/moderation/ModeratorReviewPage.tsx",
+    "frontend/src/ui-summary.json",
+    "frontend/src/utils/StorageClient.ts",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

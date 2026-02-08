@@ -1,0 +1,300 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "College notes portal (public browse, authenticated submission, moderation, offline saving) — frontend plan",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add Internet Identity sign-in/sign-out UI, show auth state in header, and gate authenticated-only sections (submit, my submissions, moderation, offline saving) in the frontend.",
+      "acceptanceCriteria": [
+        "When signed out, the user can browse verified notes but cannot submit notes, view “My submissions”, save offline, or access moderator pages/actions.",
+        "When signed in, the UI shows a sign-out action and displays the user identity (e.g., principal short form).",
+        "Backend rejects calls that require authentication when the caller is anonymous."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the main app shell with routing and top-level layout, integrating Internet Identity auth state (via existing hooks) to conditionally allow navigation to authenticated-only pages."
+        },
+        {
+          "path": "frontend/src/components/auth/AuthGate.tsx",
+          "operation": "create",
+          "description": "Add a small route/page guard that blocks rendering protected content when signed out (showing a clear sign-in-required message and a sign-in button). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/header/AppHeader.tsx",
+          "operation": "create",
+          "description": "Implement a header that reflects authentication state (signed out vs signed in), provides sign-in/sign-out actions using the existing Internet Identity hook, and displays the signed-in principal short form (and/or profile name when available). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "create",
+          "description": "Create a reusable Login/Logout button composed around frontend/src/hooks/useInternetIdentity.ts; on logout, clear cached React Query data as recommended. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Expose moderator role state in the UI and conditionally show moderator-only navigation and actions based on backend-provided role.",
+      "acceptanceCriteria": [
+        "Backend provides a method to check whether the current caller is a moderator.",
+        "Moderator-only endpoints (review list, verify, reject) are enforced in the backend and return an authorization error for non-moderators.",
+        "Frontend shows moderator-only sections/actions only when the signed-in user is a moderator."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useCallerRole.ts",
+          "operation": "create",
+          "description": "Add React Query hooks to fetch and cache the caller role from the backend actor (e.g., getCallerUserRole / isCallerAdmin) and expose a boolean for moderator/admin UI gating. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/ModeratorGate.tsx",
+          "operation": "create",
+          "description": "Add a moderator-only guard wrapper that renders an access-denied state for non-moderators and prevents moderator pages/actions from being reachable in the UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/header/AppHeader.tsx",
+          "operation": "modify",
+          "description": "Conditionally render moderator navigation entries only when the signed-in caller is a moderator/admin (based on the role hook). Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Create an authenticated note submission form with required-field validation and attachment metadata input, submitting as pending via backend calls.",
+      "acceptanceCriteria": [
+        "Submitting a note while signed out is blocked (UI) and rejected (backend).",
+        "Client-side validation prevents submission when required fields are missing; backend also validates required fields.",
+        "New submissions are stored with status = pending and uploader = caller principal, and timestamps are set."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/SubmitNotePage.tsx",
+          "operation": "create",
+          "description": "Implement the Submit Note page with required-field client validation (subject, unit, title, description) and optional attachment metadata inputs, calling the backend submitNote capability; ensure it is wrapped by AuthGate so signed-out users cannot submit. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/notes/AttachmentMetadataForm.tsx",
+          "operation": "create",
+          "description": "Add a small component to collect optional attachment metadata (filename, fileType, fileSize) and produce an AttachmentMetadata[] payload for submission. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the Submit Note page into routing and navigation, ensuring it is protected behind authentication."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add a signed-in-only “My submissions” page listing the user’s uploaded notes with status and rejection reason when present.",
+      "acceptanceCriteria": [
+        "Page is accessible only when signed in.",
+        "List shows each submission with title, subject, unit, submission date, and status.",
+        "If a note is rejected and a rejection reason exists, it is displayed in the list and/or detail for that submission."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/MySubmissionsPage.tsx",
+          "operation": "create",
+          "description": "Create the My Submissions page using the backend getMySubmissions capability; display title/subject/unit/submission date/status and show rejection reason when present; protect the route with AuthGate. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/notes/NoteStatusBadge.tsx",
+          "operation": "create",
+          "description": "Add a consistent visual badge for pending/verified/rejected states used across lists (my submissions, moderator queue). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the My Submissions page into routing and navigation, ensuring it is protected behind authentication."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Implement moderator workflow UI: pending list, detail view, and verify/reject actions (with optional rejection reason), visible only to moderators.",
+      "acceptanceCriteria": [
+        "Only moderators can access the pending list and action endpoints.",
+        "Moderator can open a pending note detail view and choose Verify or Reject; Reject can include an optional reason.",
+        "After Verify, the note appears in the public verified notes list; after Reject, it does not appear publicly and the uploader can see the rejected status and reason in “My submissions”."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+          "operation": "create",
+          "description": "Create a moderator-only page that lists pending notes (using the backend capability intended for moderation) and allows selecting a note to review; protect with ModeratorGate. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/moderation/ModeratorReviewPage.tsx",
+          "operation": "create",
+          "description": "Create a moderator-only detail/review page that shows the submission details and provides Verify/Reject actions, with an optional rejection reason input, calling the backend verifyNote capability; handle authorization errors gracefully. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useModeration.ts",
+          "operation": "create",
+          "description": "Add React Query mutations/queries for moderator actions (verify/reject) and for refreshing dependent lists (public verified list and user submissions) after moderation actions. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire moderator pages into routing and navigation, guarded by ModeratorGate, and ensure successful actions invalidate/refetch public and personal note lists."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Build public pages for verified notes only: browse/list with subject+unit filters and a note detail page that does not expose unverified notes to public users.",
+      "acceptanceCriteria": [
+        "Public browse page shows only verified notes and supports filtering by subject and unit.",
+        "Filters update the displayed list predictably (including a clear way to reset filters).",
+        "Note detail page is reachable from the list and does not expose unverified notes to unauthenticated public users."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/PublicBrowsePage.tsx",
+          "operation": "create",
+          "description": "Implement a public browse page that fetches verified notes (backend getVerifiedNotes capability), renders a list, and provides subject/unit filter controls with a clear reset action. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/NoteDetailPage.tsx",
+          "operation": "create",
+          "description": "Implement a note detail page that fetches note details using backend getNoteById and displays metadata (subject, unit, title, description, uploader display, timestamps, attachment metadata). Ensure the page guards against exposing unverified notes when signed out (e.g., show access denied if not verified and not authorized). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/notes/NoteCard.tsx",
+          "operation": "create",
+          "description": "Add a reusable NoteCard used by browse and offline lists, linking to the detail route. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/backend.d.ts",
+          "operation": "modify",
+          "description": "Align frontend types with the backend capabilities so that note list items can be navigated to a stable detail route (include note ID information where returned by backend, and ensure verified/pending/rejected can be represented). Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire Public Browse and Note Detail pages into the router and ensure list -> detail navigation is available."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Implement offline saving for signed-in users: save/remove on verified notes and an Offline section listing saved notes that persist across reloads and work while offline.",
+      "acceptanceCriteria": [
+        "Signed-in users can save and remove verified notes for offline use; signed-out users cannot save offline.",
+        "Offline section lists saved notes with enough information to open an offline detail view.",
+        "If the user saves notes, reloads the app, and then goes offline, the Offline section still shows saved notes and allows viewing their saved details without requiring network calls."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useOfflineSavedNotes.ts",
+          "operation": "create",
+          "description": "Create an offline storage hook (e.g., localStorage/IndexedDB-backed) that persists saved verified note snapshots (id + metadata + description + attachments metadata) and exposes save/remove/list/get operations; require authentication to modify saved items. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/OfflinePage.tsx",
+          "operation": "create",
+          "description": "Create an Offline page (AuthGate protected) that lists saved notes from offline storage and allows opening an offline detail view without network calls when offline. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/NoteDetailPage.tsx",
+          "operation": "modify",
+          "description": "Add Save/Remove offline actions for verified notes when signed in, using the offline storage hook; disable/hide offline save controls for signed-out users. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the Offline page into routing and navigation, ensuring it is accessible only when signed in."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Apply a cohesive visual theme (typography/spacing/components) across all pages, avoiding blue/purple as the primary brand colors.",
+      "acceptanceCriteria": [
+        "All main pages (Public browse, Note detail, Submit, My submissions, Moderator, Offline) share consistent layout patterns and styling.",
+        "Primary brand color is not blue or purple; theme feels cohesive across buttons, headings, and navigation."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Create global styles and CSS variables for a warm earthy palette (non-blue/non-purple primary), consistent typography, and base page layout styling used by all pages."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Adjust theme extension (if needed) to support the chosen warm earthy brand palette and consistent typographic/spacing tokens used across the app."
+        },
+        {
+          "path": "frontend/src/components/layout/PageLayout.tsx",
+          "operation": "create",
+          "description": "Add a shared layout wrapper component to enforce consistent page structure (container widths, headings, spacing) across all required pages. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/PublicBrowsePage.tsx",
+          "operation": "modify",
+          "description": "Adopt the shared PageLayout patterns and consistent component styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/SubmitNotePage.tsx",
+          "operation": "modify",
+          "description": "Adopt the shared PageLayout patterns and consistent component styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/MySubmissionsPage.tsx",
+          "operation": "modify",
+          "description": "Adopt the shared PageLayout patterns and consistent component styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+          "operation": "modify",
+          "description": "Adopt the shared PageLayout patterns and consistent component styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/OfflinePage.tsx",
+          "operation": "modify",
+          "description": "Adopt the shared PageLayout patterns and consistent component styling. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Add generated static brand assets (logo + illustration) under frontend/public/assets/generated and display the logo in the header and the illustration in at least one empty state.",
+      "acceptanceCriteria": [
+        "Two generated images exist at frontend/public/assets/generated with the agreed filenames from this build request.",
+        "Header displays the generated logo.",
+        "At least one empty state (e.g., no verified notes, no offline saves, or no pending notes) displays the generated illustration."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/assets/generated/notes-logo.dim_256x256.png",
+          "operation": "create",
+          "description": "Add the generated logo asset at frontend/public/assets/generated/notes-logo.dim_256x256.png and ensure it is referenced by the header UI as a static public asset."
+        },
+        {
+          "path": "frontend/public/assets/generated/notes-illustration.dim_1200x800.png",
+          "operation": "create",
+          "description": "Add the generated illustration asset at frontend/public/assets/generated/notes-illustration.dim_1200x800.png and ensure it is referenced by at least one empty state UI as a static public asset."
+        },
+        {
+          "path": "frontend/src/components/header/AppHeader.tsx",
+          "operation": "modify",
+          "description": "Render the generated logo from frontend/public/assets/generated/notes-logo.dim_256x256.png in the header branding area. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/empty-states/EmptyState.tsx",
+          "operation": "create",
+          "description": "Create a reusable empty state component that can show the generated illustration (frontend/public/assets/generated/notes-illustration.dim_1200x800.png) plus English messaging. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/PublicBrowsePage.tsx",
+          "operation": "modify",
+          "description": "Use the EmptyState component to show the generated illustration when there are no verified notes matching filters (or when no verified notes exist). Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-internet-identity-authentication-to-the-app-ui-sign-in-sign-out-and-enforce-authenticated-access-for-note-submission-my-submissions-moderator-actions-and-offline-saving-reflect-authentication-state-clearly-in-the-header-signed-out-vs-signed-in-principal",
+      "featureTitle": "Add Internet Identity authentication to the app UI (sign in / sign out) and enforce authenticated access for note submission, “My submissions”, moderator actions, and offline saving. Reflect authentication state clearly in the header (signed out vs signed in principal).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/AuthGate.tsx",
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/header/AppHeader.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-role-based-access-control-with-two-roles-regular-user-and-moderator-determine-moderator-status-in-the-backend-and-expose-a-read-method-so-the-frontend-can-conditionally-show-moderator-navigation-and-actions",
+      "featureTitle": "Implement role-based access control with two roles: regular user and moderator. Determine moderator status in the backend and expose a read method so the frontend can conditionally show moderator navigation and actions.",
+      "files": [
+        "frontend/src/components/auth/ModeratorGate.tsx",
+        "frontend/src/components/header/AppHeader.tsx",
+        "frontend/src/hooks/useCallerRole.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-authenticated-note-submission-a-form-with-required-field-validation-for-subject-unit-title-and-description-plus-attachment-metadata-input-at-least-optional-after-submission-the-note-is-stored-as-pending-moderation-under-the-submitting-user",
+      "featureTitle": "Implement authenticated note submission: a form with required-field validation for subject, unit, title, and description, plus attachment metadata input (at least optional). After submission, the note is stored as pending moderation under the submitting user.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/SubmitNotePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-my-submissions-page-for-signed-in-users-showing-all-notes-they-uploaded-including-current-status-pending-verified-rejected-and-any-rejection-reason-when-present",
+      "featureTitle": "Add a “My submissions” page for signed-in users showing all notes they uploaded, including current status (pending/verified/rejected) and any rejection reason when present.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/notes/NoteStatusBadge.tsx",
+        "frontend/src/pages/MySubmissionsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-moderator-workflow-a-moderator-only-page-to-list-pending-notes-view-submission-details-and-take-actions-to-verify-or-reject-a-note-rejection-supports-an-optional-reason-verified-notes-must-become-visible-in-the-public-browse-immediately-after-verification",
+      "featureTitle": "Implement moderator workflow: a moderator-only page to list pending notes, view submission details, and take actions to verify or reject a note. Rejection supports an optional reason. Verified notes must become visible in the public browse immediately after verification.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useModeration.ts",
+        "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+        "frontend/src/pages/moderation/ModeratorReviewPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-public-portal-pages-that-display-verified-notes-only-1-a-browse-list-page-with-subject-and-unit-filters-and-2-a-note-detail-page-showing-metadata-subject-unit-title-description-uploader-display-timestamps-attachment-metadata-and-access-to-the-note-s-content-attachments-as-represented-in-the-app",
+      "featureTitle": "Build public portal pages that display verified notes only: (1) a browse/list page with subject and unit filters, and (2) a note detail page showing metadata (subject, unit, title, description, uploader display, timestamps, attachment metadata) and access to the note’s content/attachments as represented in the app.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/notes/NoteCard.tsx",
+        "frontend/src/pages/NoteDetailPage.tsx",
+        "frontend/src/pages/PublicBrowsePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-offline-saving-for-signed-in-users-allow-save-remove-on-verified-note-detail-and-or-list-and-add-an-offline-section-listing-saved-notes-saved-notes-must-remain-available-after-a-reload-while-offline-for-previously-saved-items",
+      "featureTitle": "Implement offline saving for signed-in users: allow save/remove on verified note detail (and/or list) and add an “Offline” section listing saved notes. Saved notes must remain available after a reload while offline (for previously saved items).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useOfflineSavedNotes.ts",
+        "frontend/src/pages/NoteDetailPage.tsx",
+        "frontend/src/pages/OfflinePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-apply-a-consistent-visual-theme-across-all-pages-with-a-coherent-typography-spacing-and-component-style-system-do-not-use-blue-or-purple-as-the-primary-branding-colors",
+      "featureTitle": "Apply a consistent visual theme across all pages with a coherent typography, spacing, and component style system; do not use blue or purple as the primary branding colors.",
+      "files": [
+        "frontend/src/components/layout/PageLayout.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/MySubmissionsPage.tsx",
+        "frontend/src/pages/OfflinePage.tsx",
+        "frontend/src/pages/PublicBrowsePage.tsx",
+        "frontend/src/pages/SubmitNotePage.tsx",
+        "frontend/src/pages/moderation/ModeratorQueuePage.tsx",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-generate-static-brand-assets-logo-illustration-under-frontend-public-assets-generated-and-display-them-in-the-header-and-at-least-one-empty-state",
+      "featureTitle": "Generate static brand assets (logo + illustration) under frontend/public/assets/generated and display them in the header and at least one empty state.",
+      "files": [
+        "frontend/src/components/empty-states/EmptyState.tsx",
+        "frontend/src/components/header/AppHeader.tsx",
+        "frontend/src/pages/PublicBrowsePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
